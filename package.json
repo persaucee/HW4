@@ -1,6 +1,7 @@
 {
   "name": "app1",
   "version": "0.1.0",
+  "homepage": "https://persaucee.github.io/HW4",
   "private": true,
   "dependencies": {
     "d3": "^7.9.0",
