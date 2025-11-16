@@ -27,7 +27,7 @@ class InteractiveStreamGraph extends Component {
     console.log("renderStreamgraph called with:", data);
     console.log("this.svgRef.current:", this.svgRef.current);
 
-    const colors = {
+    const COOLARS = {
       "GPT-4": "#e41a1c",
       "Gemini": "#377eb8",
       "PaLM-2": "#4daf4a",
@@ -75,19 +75,18 @@ class InteractiveStreamGraph extends Component {
       .y1(d => yScale(d[1]))
       .curve(d3.curveBasis);
 
-    g.selectAll('.stream')
-      .data(stackedData)
+    g.selectAll('.stream').data(stackedData)
       .enter()
       .append('path')
       .attr('class', 'stream')
       .attr('d', area)
-      .attr('fill', (d, i) => colors[models[i]])
+      .attr('fill', (d, i) => COOLARS[models[i]])
       .attr('opacity', 0.8)
       .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
         const modelIndex = stackedData.indexOf(d);
         const modelName = models[modelIndex];
-        this.showTooltip(modelName, event, data, colors);
+        this.showTooltip(modelName, event, data, COOLARS);
       })
       .on('mousemove', (event) => {
         this.updateTooltipPosition(event);
@@ -102,9 +101,8 @@ class InteractiveStreamGraph extends Component {
         .tickFormat(d3.timeFormat('%Y-%m'))
       );
 
-    xAxis.append('text')
-      .attr('x', width / 2)
-      .attr('y', 40)
+    xAxis.append('text').attr('x', width / 2)
+       .attr('y', 40)
       .attr('fill', 'black')
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
@@ -116,17 +114,17 @@ class InteractiveStreamGraph extends Component {
     yAxis.append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 0 - margin.left)
-      .attr('x', 0 - (height / 2))
+       .attr('x', 0 - (height / 2))
       .attr('dy', '1em')
       .attr('fill', 'black')
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
       .text('Total Counts');
 
-    this.renderLegend(svg, margin, width, height, models, colors);
+    this.renderLegend(svg, margin, width, height, models, COOLARS);
   };
 
-  renderLegend = (svg, margin, width, height, models, colors) => {
+     renderLegend = (svg, margin, width, height, models, COOLARS) => {
     const legendGroup = svg.append('g')
       .attr('class', 'legend')
       .attr('transform', `translate(${margin.left + width + 40},${margin.top})`);
@@ -146,7 +144,7 @@ class InteractiveStreamGraph extends Component {
         .attr('y', y)
         .attr('width', 12)
         .attr('height', 12)
-        .attr('fill', colors[model]);
+        .attr('fill', COOLARS[model]);
 
       legendGroup.append('text')
         .attr('x', 18)
@@ -156,9 +154,9 @@ class InteractiveStreamGraph extends Component {
     });
   };
 
-  showTooltip = (modelName, event, data, colors) => {
+    showTooltip = (modelName, event, data, COOLARS) => {
     const tooltip = document.getElementById('interactive-tooltip');
-    const svgContent = this.createMiniBarChart(modelName, data, colors);
+    const svgContent = this.createMiniBarChart(modelName, data, COOLARS);
     tooltip.innerHTML = svgContent;
     tooltip.style.display = 'block';
     this.updateTooltipPosition(event);
@@ -170,9 +168,9 @@ class InteractiveStreamGraph extends Component {
     let y = event.pageY + 10;
 
     const tooltipWidth = tooltip.offsetWidth;
-    const tooltipHeight = tooltip.offsetHeight;
+     const tooltipHeight = tooltip.offsetHeight;
     const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+       const windowHeight = window.innerHeight;
 
     if (x + tooltipWidth > windowWidth) {
       x = event.pageX - tooltipWidth - 10;
@@ -188,10 +186,10 @@ class InteractiveStreamGraph extends Component {
 
   hideTooltip = () => {
     const tooltip = document.getElementById('interactive-tooltip');
-    tooltip.style.display = 'none';
+     tooltip.style.display = 'none';
   };
 
-  createMiniBarChart = (modelName, data, colors) => {
+  createMiniBarChart = (modelName, data, COOLARS) => {
     const miniWidth = 220;
     const miniHeight = 160;
     const miniMargin = { top: 25, right: 10, bottom: 35, left: 35 };
@@ -205,7 +203,7 @@ class InteractiveStreamGraph extends Component {
 
     const xScale = d3.scaleTime()
       .domain(d3.extent(values, d => d.date))
-      .range([0, innerWidth]);
+       .range([0, innerWidth]);
 
     const maxValue = d3.max(values, d => d.value);
     const yScale = d3.scaleLinear()
@@ -226,7 +224,7 @@ class InteractiveStreamGraph extends Component {
       const barHeight = innerHeight - y;
 
       if (barHeight > 0) {
-        svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${colors[modelName]}" opacity="0.85"></rect>`;
+        svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${COOLARS[modelName]}" opacity="0.85"></rect>`;
       }
     });
 
@@ -236,7 +234,7 @@ class InteractiveStreamGraph extends Component {
     const yTicks = yScale.ticks(4);
     yTicks.forEach(tick => {
       const y = yScale(tick);
-      svg += `<line x1="-5" y1="${y}" x2="0" y2="${y}" stroke="black" stroke-width="1"></line>`;
+       svg += `<line x1="-5" y1="${y}" x2="0" y2="${y}" stroke="black" stroke-width="1"></line>`;
       svg += `<text x="-8" y="${y + 3}" text-anchor="end" font-size="10px">${tick}</text>`;
     });
 
@@ -245,18 +243,17 @@ class InteractiveStreamGraph extends Component {
       const x = xScale(tick);
       const dateStr = d3.timeFormat('%b %y')(tick);
       svg += `<line x1="${x}" y1="${innerHeight}" x2="${x}" y2="${innerHeight + 5}" stroke="black" stroke-width="1"></line>`;
-      svg += `<text x="${x}" y="${innerHeight + 18}" text-anchor="middle" font-size="9px">${dateStr}</text>`;
+        svg += `<text x="${x}" y="${innerHeight + 18}" text-anchor="middle" font-size="9px">${dateStr}</text>`;
     });
 
     svg += `<text x="-20" y="${innerHeight / 2}" text-anchor="middle" font-size="10px" transform="rotate(-90 -20 ${innerHeight / 2})">Count</text>`;
 
-    svg += `</g></svg>`;
+     svg += `</g></svg>`;
 
     return svg;
   };
 
-  componentDidMount() {
-    // Create tooltip element if it doesn't exist
+     componentDidMount() {
     if (!document.getElementById('interactive-tooltip')) {
       const tooltip = document.createElement('div');
       tooltip.id = 'interactive-tooltip';
