@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import './App.css';
 
 class FileUpload extends Component {
   constructor(props) {
@@ -10,19 +11,23 @@ class FileUpload extends Component {
     };
   }
   
-  handleFileSubmit = (event) => {
-    event.preventDefault();
+  handleFileSubmit = () => {
+    console.log("handleFileSubmit triggered!");
     const { selectedFile } = this.state;
-    
+    console.log("Selected file:", selectedFile);
+
     if (selectedFile) {
       const fileReader = new FileReader();
       fileReader.onload = (e) => {
         const csvText = e.target.result;
         const parsedJsonData = this.csvToJson(csvText);
-        this.setState({ parsedData: parsedJsonData });  // Set parsed data to state
-        this.props.setUploadedData(parsedJsonData)
+        console.log("Parsed data:", parsedJsonData);
+        this.setState({ parsedData: parsedJsonData });
+        this.props.setUploadedData(parsedJsonData);
       };
       fileReader.readAsText(selectedFile);
+    } else {
+      console.log("No file selected!");
     }
   };
 
@@ -67,17 +72,39 @@ class FileUpload extends Component {
   };
 
   render() {
+    const { selectedFile } = this.state;
+    const isDisabled = !selectedFile;
+    console.log("FileUpload render - selectedFile:", selectedFile, "isDisabled:", isDisabled);
+
     return (
       <div style={{ backgroundColor: "#f0f0f0", padding: 20 }}>
         <h2>Upload a CSV File</h2>
-        <form onSubmit={this.handleFileSubmit}>
-          <input 
-            type="file" 
-            accept=".csv" 
-            onChange={(event) => this.setState({ selectedFile: event.target.files[0] })} 
+        <div>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={(event) => {
+              console.log("File selected:", event.target.files[0]);
+              this.setState({ selectedFile: event.target.files[0] });
+            }}
           />
-          <button type="submit">Upload</button>
-        </form>
+          <button
+            type="button"
+            className="upload-button"
+            disabled={isDisabled}
+            onClick={() => {
+              console.log("BUTTON CLICKED!!!");
+              this.handleFileSubmit();
+            }}
+            style={{
+              opacity: isDisabled ? 0.5 : 1,
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
+              pointerEvents: 'auto'
+            }}
+          >
+            Upload
+          </button>
+        </div>
       </div>
     );
   }
